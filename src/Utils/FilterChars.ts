@@ -11,5 +11,14 @@ export const filterHuntedChars = (puneChars: IPunePlayers[], allChars: IAllPlaye
         }
     }
     const response = allChars.filter((char) => huntedChars.includes(char));
+    response.sort((a, b) => {
+        if (a.level > b.level) {
+            return -1;
+        }
+        if (a.level < b.level) {
+            return 1;
+        }
+        return 0;
+    });
     return response;    
 };

@@ -8,6 +8,7 @@ function App() {
   const [intervall, setIntervall] = useState(10);
   const [allPlayers, setAllPlayers] = useState([]);
   const [punePlayers, setPunePlayers] = useState([]);
+  const [intervalId, setIntervalId] = useState<number | null>(null);
    const {
     huntedChars,
     setHuntedChars,
@@ -29,7 +30,7 @@ function App() {
     return data.guilds.guild.members;
   }, []);
   useEffect(() => {
-    const intervalId = setInterval(async () => {
+    const id = setInterval(async () => {
       setIsLoading && setIsLoading(true);
       await fetchAllPlayers();
       await fetchPunePlayers();
@@ -37,7 +38,8 @@ function App() {
       setHuntedChars(filterHuntedChars(punePlayers, allPlayers));
       setIsLoading && setIsLoading(false);
     }, intervall * 1000);
-    return () => clearInterval(intervalId);
+    setIntervalId(id);
+    return () => clearInterval(id);
   }, [intervall, fetchAllPlayers, fetchPunePlayers, punePlayers, allPlayers])
 
   const handleInterval = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -48,6 +50,9 @@ function App() {
     setIntervall(Number(e.target.value))
   }
 
+  const stopUpdate = (): void => {
+    intervalId && clearInterval(intervalId)
+  };
   return (
     <>
       <div>Hunted List</div>
@@ -57,6 +62,9 @@ function App() {
         value={intervall}
         onChange={handleInterval}
       />
+      <button
+        onClick={stopUpdate}
+      >Parar Atualização</button>
       <FilterBar />
       {isLoading ? 
       <div>Loading...</div> : 
