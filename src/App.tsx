@@ -1,13 +1,19 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useContext } from 'react'
 import { filterHuntedChars } from './Utils/FilterChars'
-import IAllPlayers from './Interfaces/IAllPlayers';
+import Char from './Components/Char';
+import FilterBar from './Components/FilterBar';
+import Context from './Context/Context';
 
 function App() {
   const [intervall, setIntervall] = useState(10);
   const [allPlayers, setAllPlayers] = useState([]);
   const [punePlayers, setPunePlayers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [huntedChars, setHuntedChars] = useState<IAllPlayers[]>([]);
+   const {
+    huntedChars,
+    setHuntedChars,
+    isLoading,
+    setIsLoading
+  } = useContext(Context);
   
   const fetchAllPlayers = useCallback(async () => {
     const response = await fetch('https://api.tibiadata.com/v3/world/obscubra')
@@ -24,11 +30,12 @@ function App() {
   }, []);
   useEffect(() => {
     const intervalId = setInterval(async () => {
-      setIsLoading(true);
+      setIsLoading && setIsLoading(true);
       await fetchAllPlayers();
       await fetchPunePlayers();
+      if (setHuntedChars === undefined) return;
       setHuntedChars(filterHuntedChars(punePlayers, allPlayers));
-      setIsLoading(false);
+      setIsLoading && setIsLoading(false);
     }, intervall * 1000);
     return () => clearInterval(intervalId);
   }, [intervall, fetchAllPlayers, fetchPunePlayers, punePlayers, allPlayers])
@@ -50,15 +57,12 @@ function App() {
         value={intervall}
         onChange={handleInterval}
       />
+      <FilterBar />
       {isLoading ? 
       <div>Loading...</div> : 
       <div>
-        {huntedChars.map((char) => (
-          <div key={char.name}>
-            <div>{char.name}</div>
-            <div>{char.level}</div>
-            <div>{char.vocation}</div>
-          </div>
+        {huntedChars?.map((char) => (
+          <Char key={char.name} char={char} />
         ))}
       </div>}
     </>
