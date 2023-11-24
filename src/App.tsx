@@ -118,7 +118,7 @@ function App() {
           <Char key={char.name} char={char} />
         ))}
       </div>}
-      <footer>By Leozin Pokasideia e Nescau do Hetai</footer>
+      <footer>By Leozin Pokazideia e Nescau do Hetai</footer>
     </>
   )
 }

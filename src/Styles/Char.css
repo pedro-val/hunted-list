@@ -17,6 +17,12 @@
 
 .charBox > div:first-child {
     text-align: left;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+}
+
+.charBox > div:first-child:hover {
+    color: #ff0000;
 }
 
 .charBox > div:nth-child(2) {
