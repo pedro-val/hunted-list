@@ -118,6 +118,7 @@ function App() {
           <Char key={char.name} char={char} />
         ))}
       </div>}
+      <footer>By Leozin Pokasideia e Nescau do Hetai</footer>
     </>
   )
 }
