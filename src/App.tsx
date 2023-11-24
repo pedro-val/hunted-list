@@ -9,6 +9,9 @@ function App() {
   const [allPlayers, setAllPlayers] = useState([]);
   const [punePlayers, setPunePlayers] = useState([]);
   const [intervalId, setIntervalId] = useState<number | null>(null);
+  const [numOnline, setNumOnline] = useState(0);
+  const [alarmChecked, setAlarmChecked] = useState(false);
+  const [audio] = useState(new Audio('/buzina.mp3'));
    const {
     huntedChars,
     setHuntedChars,
@@ -29,6 +32,30 @@ function App() {
     setPunePlayers(data.guilds.guild.members);
     return data.guilds.guild.members;
   }, []);
+
+  const firstFetch = useCallback(async () => {
+    const allPlayers = await fetchAllPlayers();
+    const punePlayers = await fetchPunePlayers();
+    if (setHuntedChars === undefined) return;
+    setHuntedChars(filterHuntedChars(punePlayers, allPlayers));
+    setIsLoading !== undefined && setIsLoading(false);
+  }, [fetchAllPlayers, fetchPunePlayers]);
+
+  useEffect(() => {
+    firstFetch();
+  }, []);
+
+  useEffect(() => {
+    if (huntedChars === undefined) return;
+    if (alarmChecked && huntedChars.length >= numOnline) {
+      audio.loop = true;
+      audio.play();
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }, [alarmChecked, huntedChars, numOnline]);
+
   useEffect(() => {
     const id = setInterval(async () => {
       setIsLoading && setIsLoading(true);
@@ -37,7 +64,7 @@ function App() {
       if (setHuntedChars === undefined) return;
       setHuntedChars(filterHuntedChars(punePlayers, allPlayers));
       setIsLoading && setIsLoading(false);
-    }, intervall * 1000);
+    }, intervall * 1000) as unknown as number;
     setIntervalId(id);
     return () => clearInterval(id);
   }, [intervall, fetchAllPlayers, fetchPunePlayers, punePlayers, allPlayers])
@@ -64,7 +91,25 @@ function App() {
       />
       <button
         onClick={stopUpdate}
-      >Parar Atualização</button>
+      >
+        Parar Atualização
+      </button>
+      <br />
+      <p>
+        Alarme de Players Online - Selecione a quantidade e marque a caixa para ativar o alarme!
+      </p>
+      <input
+        type='number'
+        min={1}
+        placeholder='Quantos Online?'
+        value={numOnline}
+        onChange={(e) => setNumOnline(Number(e.target.value))}
+      />
+      <input
+        type='checkbox'
+        checked={alarmChecked}
+        onChange={() => setAlarmChecked(!alarmChecked)}
+      />
       <FilterBar />
       {isLoading ? 
       <div>Loading...</div> : 
