@@ -3,6 +3,7 @@ import { filterHuntedChars } from './Utils/FilterChars'
 import Char from './Components/Char';
 import FilterBar from './Components/FilterBar';
 import Context from './Context/Context';
+import './Styles/Main.css'
 
 function App() {
   const [intervall, setIntervall] = useState(10);
@@ -12,6 +13,7 @@ function App() {
   const [numOnline, setNumOnline] = useState(0);
   const [alarmChecked, setAlarmChecked] = useState(false);
   const [audio] = useState(new Audio('/buzina.mp3'));
+  const [minLevel, setMinLevel] = useState(2);
    const {
     huntedChars,
     setHuntedChars,
@@ -37,12 +39,14 @@ function App() {
     const allPlayers = await fetchAllPlayers();
     const punePlayers = await fetchPunePlayers();
     if (setHuntedChars === undefined) return;
-    setHuntedChars(filterHuntedChars(punePlayers, allPlayers));
+    setHuntedChars(filterHuntedChars(punePlayers, allPlayers, minLevel));
     setIsLoading !== undefined && setIsLoading(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchAllPlayers, fetchPunePlayers]);
 
   useEffect(() => {
     firstFetch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -54,6 +58,7 @@ function App() {
       audio.pause();
       audio.currentTime = 0;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [alarmChecked, huntedChars, numOnline]);
 
   useEffect(() => {
@@ -62,11 +67,12 @@ function App() {
       await fetchAllPlayers();
       await fetchPunePlayers();
       if (setHuntedChars === undefined) return;
-      setHuntedChars(filterHuntedChars(punePlayers, allPlayers));
+      setHuntedChars(filterHuntedChars(punePlayers, allPlayers, minLevel));
       setIsLoading && setIsLoading(false);
     }, intervall * 1000) as unknown as number;
     setIntervalId(id);
     return () => clearInterval(id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [intervall, fetchAllPlayers, fetchPunePlayers, punePlayers, allPlayers])
 
   const handleInterval = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -82,7 +88,7 @@ function App() {
   };
   return (
     <>
-      <div>Hunted List</div>
+      <div>Hunted List - {huntedChars?.length} Online</div>
       <div>Interval: {`Intervalo de tempo para atualização automática de ${intervall} segundos`}</div>
       <input
         type='number'
@@ -95,6 +101,15 @@ function App() {
         Parar Atualização
       </button>
       <br />
+      <p>
+        Level Mínimo para Filtragem
+      </p>
+      <input
+        type='number'
+        min={2}
+        value={minLevel}
+        onChange={(e) => setMinLevel(Number(e.target.value))}
+      />
       <p>
         Alarme de Players Online - Selecione a quantidade e marque a caixa para ativar o alarme!
       </p>
@@ -110,9 +125,14 @@ function App() {
         checked={alarmChecked}
         onChange={() => setAlarmChecked(!alarmChecked)}
       />
+      <br/>
       <FilterBar />
       {isLoading ? 
-      <div>Loading...</div> : 
+      <img 
+      className='loading'
+      src='/loading.jpg'
+      alt='loading'      
+      /> : 
       <div>
         {huntedChars?.map((char) => (
           <Char key={char.name} char={char} />

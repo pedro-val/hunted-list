@@ -143,7 +143,6 @@ function FilterBar() {
 
   return (
     <>
-        <p>Filtros</p>
         <button
             onClick={() => handleAlphabetic("ASC")}
         >Alfabético</button>
@@ -159,6 +158,9 @@ function FilterBar() {
         <button
             onClick={() => handleClick("DESC")}
         >Descendente</button>
+        <button>
+
+        </button>
     </>
   )
 }

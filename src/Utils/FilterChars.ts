@@ -1,7 +1,7 @@
 import IPunePlayers from "../Interfaces/IPunePlayers";
 import IAllPlayers from "../Interfaces/IAllPlayers";
 
-export const filterHuntedChars = (puneChars: IPunePlayers[], allChars: IAllPlayers[]) => {
+export const filterHuntedChars = (puneChars: IPunePlayers[], allChars: IAllPlayers[], level: number) => {
     const huntedChars: IAllPlayers[] = [];
     const allNames = allChars.map((char) => char.name);
     const puneNames = puneChars.map((char) => char.name);
@@ -20,5 +20,6 @@ export const filterHuntedChars = (puneChars: IPunePlayers[], allChars: IAllPlaye
         }
         return 0;
     });
-    return response;    
+    const filterLevel = response.filter((char) => char.level >= level);
+    return filterLevel;
 };

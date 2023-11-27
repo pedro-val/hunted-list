@@ -1,7 +1,7 @@
 .charBox {
     display: flex;
     justify-content: space-between;
-    max-width: 100%;
+    max-width: 50%;
     max-height: 100%;
     border: 1px solid black;
     margin: 2px;
@@ -21,14 +21,30 @@
     transition: color 0.3s ease-in-out;
 }
 
-.charBox > div:first-child:hover {
+.charBox > div:nth-child(2):hover {
     color: #ff0000;
 }
 
 .charBox > div:nth-child(2) {
     text-align: center;
+    cursor: pointer;
+    text-align: left;
+    transition: color 0.3s ease-in-out;
+}
+
+.charBox > div:nth-child(3) {
+    text-align: center;
 }
 
 .charBox > div:last-child {
     text-align: right;
+}
+
+.copy {
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+}
+
+.copy:hover {
+    color: #ff0000;
 }
