@@ -158,9 +158,6 @@ function FilterBar() {
         <button
             onClick={() => handleClick("DESC")}
         >Descendente</button>
-        <button>
-
-        </button>
     </>
   )
 }
